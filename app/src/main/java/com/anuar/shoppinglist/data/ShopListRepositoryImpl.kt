@@ -13,6 +13,7 @@ object ShopListRepositoryImpl: ShopListRepository {
     private val shopListLD=MutableLiveData<List<ShopItem>>()
 
     private var autoIncrementId=0
+
     override fun addShopItem(shopItem: ShopItem) {
         if(shopItem.id==ShopItem.UNDEFINED_ID){
             shopItem.id= autoIncrementId++

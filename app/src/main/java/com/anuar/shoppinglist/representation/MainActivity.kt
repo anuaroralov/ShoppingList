@@ -8,20 +8,30 @@ import com.anuar.shoppinglist.domain.ShopItem
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
-    private lateinit var viewModel:viewModel
+    lateinit var adapter: ShopListAdapter
+    private lateinit var viewModel:MainViewModel
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        viewModel=ViewModelProvider(this).get(viewModel::class.java)
+        viewModel=ViewModelProvider(this).get(MainViewModel::class.java)
+
+        val rvShopList=binding.rvShopList
+        adapter=ShopListAdapter()
+        rvShopList.adapter =adapter
+
+
         viewModel.shopList.observe(this){
-            showList(it)
+            adapter.list=it
+        }
+
+        binding.buttonAddShopItem.setOnClickListener{
+            val newItem=ShopItem("Baaa",17,true)
+            viewModel.add(newItem)
         }
 
 
     }
-    fun showList(shopItems: List<ShopItem>) {
 
-    }
 }

@@ -9,7 +9,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anuar.shoppinglist.R
 import com.anuar.shoppinglist.domain.ShopItem
 
-class ShopListAdapter(private val list: List<ShopItem>):RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+class ShopListAdapter:RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
+
+    var list= listOf<ShopItem>()
+        set(value){
+            field=value
+            notifyDataSetChanged()
+        }
     class ShopItemViewHolder(val view: View): RecyclerView.ViewHolder(view) {
         val tvName:TextView = view.findViewById(R.id.tv_name)
         val tvCount:TextView = view.findViewById(R.id.tv_count)
@@ -29,6 +35,7 @@ class ShopListAdapter(private val list: List<ShopItem>):RecyclerView.Adapter<Sho
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
         viewHolder.view.setOnLongClickListener {
+
             true
         }
     }
