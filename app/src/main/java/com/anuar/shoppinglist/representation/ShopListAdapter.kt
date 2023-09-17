@@ -4,18 +4,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.anuar.shoppinglist.R
 import com.anuar.shoppinglist.domain.ShopItem
 
 class ShopListAdapter(private val onItemLongClickListener: (ShopItem)->Unit,
                       private val onItemClickListener:(ShopItem)->Unit):
-                      RecyclerView.Adapter<ShopListAdapter.ShopItemViewHolder>() {
-    var list= listOf<ShopItem>()
-        set(value){
-            field=value
-            notifyDataSetChanged()
-        }
+                      ListAdapter<ShopItem, ShopListAdapter.ShopItemViewHolder>(DiffCallback) {
+
     class ShopItemViewHolder(val view: View): RecyclerView.ViewHolder(view) {
         val tvName:TextView = view.findViewById(R.id.tv_name)
         val tvCount:TextView = view.findViewById(R.id.tv_count)
@@ -32,12 +30,8 @@ class ShopListAdapter(private val onItemLongClickListener: (ShopItem)->Unit,
         return ShopItemViewHolder(view)
     }
 
-    override fun getItemCount(): Int {
-        return list.size
-    }
-
     override fun getItemViewType(position: Int): Int {
-        if(list[position].enabled){
+        if(getItem(position).enabled){
             return VIEW_TYPE_ENABLED
         }
         else{
@@ -46,7 +40,7 @@ class ShopListAdapter(private val onItemLongClickListener: (ShopItem)->Unit,
     }
 
     override fun onBindViewHolder(viewHolder: ShopItemViewHolder, position: Int) {
-        val shopItem = list[position]
+        val shopItem = getItem(position)
         viewHolder.tvName.text = shopItem.name
         viewHolder.tvCount.text = shopItem.count.toString()
         viewHolder.view.setOnLongClickListener {
@@ -63,5 +57,15 @@ class ShopListAdapter(private val onItemLongClickListener: (ShopItem)->Unit,
         const val VIEW_TYPE_DISABLED=101
 
         const val MAX_POOL_SIZE=20
+    }
+
+    object DiffCallback: DiffUtil.ItemCallback<ShopItem>() {
+        override fun areItemsTheSame(oldItem: ShopItem, newItem: ShopItem): Boolean {
+            return oldItem.id == newItem.id
+        }
+
+        override fun areContentsTheSame(oldItem: ShopItem, newItem: ShopItem): Boolean {
+            return oldItem == newItem
+        }
     }
 }

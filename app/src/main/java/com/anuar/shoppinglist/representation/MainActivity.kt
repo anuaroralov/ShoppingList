@@ -2,6 +2,7 @@ package com.anuar.shoppinglist.representation
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -25,7 +26,7 @@ class MainActivity : AppCompatActivity() {
                 viewModel.changeEnableState(it)
             },
             {
-                TODO()
+                Log.d("MainAC",it.toString())
             }
         )
         rvShopList.adapter =adapter
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
         setupSwipeListener(rvShopList)
 
         viewModel.shopList.observe(this){
-            adapter.list=it
+            adapter.submitList(it)
         }
 
         binding.buttonAddShopItem.setOnClickListener{
@@ -60,7 +61,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-                val item = adapter.list[viewHolder.adapterPosition]
+                val item = adapter.currentList[viewHolder.adapterPosition]
                 viewModel.deleteShopItem(item)
             }
         }
