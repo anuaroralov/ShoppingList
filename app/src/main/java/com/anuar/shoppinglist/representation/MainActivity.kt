@@ -1,11 +1,16 @@
 package com.anuar.shoppinglist.representation
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
+import android.widget.Button
+import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.anuar.shoppinglist.R
 import com.anuar.shoppinglist.databinding.ActivityMainBinding
 import com.anuar.shoppinglist.domain.ShopItem
 
@@ -13,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
     lateinit var adapter: ShopListAdapter
     private lateinit var viewModel:MainViewModel
+    private lateinit var dialog:Dialog
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding=ActivityMainBinding.inflate(layoutInflater)
@@ -20,13 +26,15 @@ class MainActivity : AppCompatActivity() {
 
         viewModel=ViewModelProvider(this).get(MainViewModel::class.java)
 
+        dialog=Dialog(this)
+
         val rvShopList=binding.rvShopList
         adapter=ShopListAdapter(
             {
                 viewModel.changeEnableState(it)
             },
             {
-                Log.d("MainAC",it.toString())
+                addOrChangeShopItem(CHANGE,it)
             }
         )
         rvShopList.adapter =adapter
@@ -39,9 +47,9 @@ class MainActivity : AppCompatActivity() {
         }
 
         binding.buttonAddShopItem.setOnClickListener{
-            val newItem=ShopItem("Baaa",17,true)
-            viewModel.add(newItem)
+            addOrChangeShopItem(ADD,ShopItem("",0,true))
         }
+
 
 
     }
@@ -67,6 +75,71 @@ class MainActivity : AppCompatActivity() {
         }
         val itemTouchHelper = ItemTouchHelper(callback)
         itemTouchHelper.attachToRecyclerView(rvShopList)
+    }
+
+    private fun addOrChangeShopItem(addOrChange:Int, oldItem: ShopItem){
+        dialog.setContentView(R.layout.dialog_layout)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.setCancelable(true)
+
+        val button: Button = dialog.findViewById(R.id.save_button)
+        val name: EditText = dialog.findViewById(R.id.et_name)
+        val count: EditText = dialog.findViewById(R.id.et_count)
+
+        if(addOrChange==ADD) {
+            button.setOnClickListener {
+                if( (count.text.toString().isBlank()) or (name.text.toString().isBlank())){
+                    if(name.text.toString().isBlank()){
+                        name.setError("Invalid name")
+                    }
+                    if(count.text.toString().isBlank()){
+                        count.setError("Invalid count")
+                    }
+                }
+                else{
+                    val newItem =
+                        ShopItem(
+                            name.text.toString(),
+                            Integer.parseInt(count.text.toString()),
+                            true)
+                    viewModel.addShopItem(newItem)
+                    dialog.cancel()
+                }
+            }
+
+        }
+        else if(addOrChange== CHANGE){
+            name.setText(oldItem.name)
+            count.setText(oldItem.count.toString())
+
+            button.setOnClickListener {
+                if( (count.text.toString().isBlank()) or (name.text.toString().isBlank())){
+                    if(name.text.toString().isBlank()){
+                        name.setError("Invalid name")
+                    }
+                    if(count.text.toString().isBlank()){
+                        count.setError("Invalid count")
+                    }
+                }
+                else {
+                    val newItem =
+                        ShopItem(
+                            name.text.toString(),
+                            Integer.parseInt(count.text.toString()),
+                            oldItem.enabled,
+                            oldItem.id
+                        )
+                    viewModel.editShopItem(newItem)
+                    dialog.cancel()
+                }
+            }
+        }
+        dialog.show()
+    }
+
+    companion object{
+        const val ADD=110
+        const val CHANGE=111
     }
 
 }
