@@ -1,6 +1,7 @@
 package com.anuar.shoppinglist.representation
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import com.anuar.shoppinglist.data.ShopListRepositoryImpl
 import com.anuar.shoppinglist.domain.AddShopItemUseCase
 import com.anuar.shoppinglist.domain.DeleteShopItemUseCase
@@ -8,9 +9,9 @@ import com.anuar.shoppinglist.domain.EditShopItemUseCase
 import com.anuar.shoppinglist.domain.GetShopListUseCase
 import com.anuar.shoppinglist.domain.ShopItem
 
-class MainViewModel: ViewModel() {
+class MainViewModel(application: Application): AndroidViewModel(application) {
 
-    private val repository=ShopListRepositoryImpl
+    private val repository=ShopListRepositoryImpl(application)
 
     private val getShopListUseCase=GetShopListUseCase(repository)
     private val deleteShopItemUseCase=DeleteShopItemUseCase(repository)

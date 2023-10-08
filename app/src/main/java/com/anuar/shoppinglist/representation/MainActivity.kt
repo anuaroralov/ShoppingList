@@ -8,7 +8,6 @@ import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
 import androidx.lifecycle.ViewModelProvider
-import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.anuar.shoppinglist.R
