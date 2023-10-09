@@ -8,6 +8,9 @@ import com.anuar.shoppinglist.domain.DeleteShopItemUseCase
 import com.anuar.shoppinglist.domain.EditShopItemUseCase
 import com.anuar.shoppinglist.domain.GetShopListUseCase
 import com.anuar.shoppinglist.domain.ShopItem
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class MainViewModel(application: Application): AndroidViewModel(application) {
 
@@ -20,19 +23,33 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
 
     val shopList=getShopListUseCase.getShopList()
 
+    private val scope= CoroutineScope(Dispatchers.IO)
+
     fun deleteShopItem(shopItem: ShopItem){
-        deleteShopItemUseCase.deleteShopItem(shopItem)
+        scope.launch {
+            deleteShopItemUseCase.deleteShopItem(shopItem)
+        }
+
     }
 
     fun changeEnableState(shopItem: ShopItem){
-        val newItem=shopItem.copy(enabled = !shopItem.enabled)
-        editShopItemUseCase.editShopItem(newItem)
+        scope.launch {
+            val newItem=shopItem.copy(enabled = !shopItem.enabled)
+            editShopItemUseCase.editShopItem(newItem)
+        }
+
     }
     fun editShopItem(shopItem: ShopItem){
-        editShopItemUseCase.editShopItem(shopItem)
+        scope.launch {
+            editShopItemUseCase.editShopItem(shopItem)
+        }
+
     }
 
     fun addShopItem(shopItem: ShopItem){
-        addShopItemUseCase.addShopItem(shopItem)
+        scope.launch{
+            addShopItemUseCase.addShopItem(shopItem)
+        }
+
     }
 }
