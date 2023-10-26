@@ -13,18 +13,30 @@ import androidx.recyclerview.widget.RecyclerView
 import com.anuar.shoppinglist.R
 import com.anuar.shoppinglist.databinding.ActivityMainBinding
 import com.anuar.shoppinglist.domain.ShopItem
+import javax.inject.Inject
 
 class MainActivity : AppCompatActivity() {
     lateinit var binding:ActivityMainBinding
     lateinit var adapter: ShopListAdapter
-    private lateinit var viewModel:MainViewModel
+
+    @Inject
+    lateinit var viewModelFactory:ViewModelFactory
+
+    private val viewModel by lazy {
+        ViewModelProvider(this,viewModelFactory)[MainViewModel::class.java]
+    }
+
     private lateinit var dialog:Dialog
+
+    private val component by lazy {
+        (application as MyApplication).component
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        component.inject(this)
         binding=ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        viewModel=ViewModelProvider(this).get(MainViewModel::class.java)
 
         dialog=Dialog(this)
 

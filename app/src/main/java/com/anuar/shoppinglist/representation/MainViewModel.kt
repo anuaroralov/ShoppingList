@@ -1,8 +1,6 @@
 package com.anuar.shoppinglist.representation
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
-import com.anuar.shoppinglist.data.ShopListRepositoryImpl
+import androidx.lifecycle.ViewModel
 import com.anuar.shoppinglist.domain.AddShopItemUseCase
 import com.anuar.shoppinglist.domain.DeleteShopItemUseCase
 import com.anuar.shoppinglist.domain.EditShopItemUseCase
@@ -10,16 +8,14 @@ import com.anuar.shoppinglist.domain.GetShopListUseCase
 import com.anuar.shoppinglist.domain.ShopItem
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class MainViewModel(application: Application): AndroidViewModel(application) {
-
-    private val repository=ShopListRepositoryImpl(application)
-
-    private val getShopListUseCase=GetShopListUseCase(repository)
-    private val deleteShopItemUseCase=DeleteShopItemUseCase(repository)
-    private val editShopItemUseCase=EditShopItemUseCase(repository)
-    private val addShopItemUseCase=AddShopItemUseCase(repository)
+class MainViewModel @Inject constructor( private val getShopListUseCase:GetShopListUseCase,
+                     private val deleteShopItemUseCase:DeleteShopItemUseCase,
+                     private val editShopItemUseCase:EditShopItemUseCase,
+                     private val addShopItemUseCase:AddShopItemUseCase): ViewModel() {
 
     val shopList=getShopListUseCase.getShopList()
 
@@ -50,6 +46,10 @@ class MainViewModel(application: Application): AndroidViewModel(application) {
         scope.launch{
             addShopItemUseCase.addShopItem(shopItem)
         }
+    }
 
+    override fun onCleared() {
+        super.onCleared()
+        scope.cancel()
     }
 }
